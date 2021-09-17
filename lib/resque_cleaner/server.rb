@@ -230,7 +230,14 @@ module ResqueCleaner
         f: @from,
         t: @to,
         regex: @regex
-      }.map {|key,value| "#{key}=#{URI.encode(value.to_s)}"}.join("&")
+      }
+      
+      if URI.respond_to?(:encode)
+        # ruby < 3.0
+        params = params.map {|key,value| "#{key}=#{URI.encode(value.to_s)}"}.join("&")
+      else
+        params = params.map {|key,value| "#{key}=#{URI.encode_www_form_component(value.to_s)}"}.join("&")
+      end
 
       @list_url = "cleaner_list?#{params}"
       @dump_url = "cleaner_dump?#{params}"

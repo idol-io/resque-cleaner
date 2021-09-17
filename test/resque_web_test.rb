@@ -69,5 +69,17 @@ describe "resque-web" do
     get "/cleaner_dump"
     assert last_response.ok?, last_response.errors
   end
+
+  it "serialize activejob failure" do
+    add_activejob_failure
+
+    get "/cleaner_list", :c => "ActiveJobGoodJob"
+    assert last_response.body.include?("ActiveJobGoodJob")
+
+    post "/cleaner_exec", :c => "ActiveJobGoodJob", :select_all_pages => "1", :action => "retry_and_clear"
+
+    job = Resque::Job.reserve('queue')
+    assert_equal 'ActiveJob::QueueAdapters::ResqueAdapter::JobWrapper', job.payload['class'], job.inspect
+  end
 end
 
