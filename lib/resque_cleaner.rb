@@ -125,7 +125,16 @@ module Resque
 
               value = redis.lindex(:failed, index)
               redis.multi do
-                Job.create(queue||job['queue'], job['payload']['class'], *job['payload']['args'])
+                serialized_job = job.dup
+                if serialized_job.dig('payload', 'class') != 'ActiveJob::QueueAdapters::ResqueAdapter::JobWrapper'
+                  serialized_job['payload']['args'] = [
+                    'job_class': serialized_job['payload']['class'],
+                    'arguments': serialized_job['payload']['args'],
+                  ]
+                  serialized_job['payload']['class'] = 'ActiveJob::QueueAdapters::ResqueAdapter::JobWrapper'
+                end
+
+                Job.create(queue||serialized_job['queue'], serialized_job['payload']['class'], *serialized_job['payload']['args'])
 
                 if clear_after_requeue
                   # remove job
@@ -247,7 +256,7 @@ module Resque
 
         # Wraps Resque's all and returns always array.
         def all(index=0,count=1)
-          jobs = @cleaner.failure.all( index, count)
+          jobs = @cleaner.failure.all(index, count)
           jobs = [] unless jobs
           jobs = [jobs] unless jobs.is_a?(Array)
           jobs.each{|j| j.extend FailedJobEx}
