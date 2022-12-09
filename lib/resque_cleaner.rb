@@ -263,12 +263,12 @@ module Resque
           jobs = [jobs] unless jobs.is_a?(Array)
           jobs.each{|j| j.extend FailedJobEx}
 
-          # ActiveJob compatibility layer
-          jobs.each do |job|
-            next unless job.dig("payload", "class") == "ActiveJob::QueueAdapters::ResqueAdapter::JobWrapper"
-            job["payload"]["class"] = job.dig("payload", "args", 0, "job_class")
-            job["payload"]["args"] = job.dig("payload", "args", 0, "arguments")
-          end
+          # # ActiveJob compatibility layer
+          # jobs.each do |job|
+          #   next unless job.dig("payload", "class") == "ActiveJob::QueueAdapters::ResqueAdapter::JobWrapper"
+          #   job["payload"]["class"] = job.dig("payload", "args", 0, "job_class")
+          #   job["payload"]["args"] = job.dig("payload", "args", 0, "arguments")
+          # end
           jobs
         end
 
