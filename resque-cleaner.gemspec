@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name              = "resque-cleanerer"
+  s.name              = "resque-cleaner"
   s.version           = "0.5.0"
   s.date              = Time.now.strftime('%Y-%m-%d')
   s.summary           = "Resque plugin cleaning up failed jobs."
