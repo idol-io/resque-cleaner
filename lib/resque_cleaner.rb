@@ -223,9 +223,10 @@ module Resque
           end
         end
 
-        attr_accessor :maximum
+        attr_accessor :maximum, :failure_count
         def initialize(cleaner)
           @cleaner = cleaner
+          @failure_count = @cleaner.failure.count
           @maximum = @@default_maximum
           @locked = false
         end
@@ -233,7 +234,7 @@ module Resque
         # Returns true if limiter is ON: number of failed jobs is more than
         # maximum value.
         def on?
-          @cleaner.failure.count > @maximum
+          @failure_count  > @maximum
         end
 
         # Returns limited count.
@@ -241,7 +242,7 @@ module Resque
           if @locked
             @jobs.size
           else
-            on? ? @maximum : @cleaner.failure.count
+            on? ? @maximum : @failure_count
           end
         end
 
@@ -276,7 +277,7 @@ module Resque
           if @locked
             @start_index
           else
-            on? ? @cleaner.failure.count-@maximum : 0
+            on? ? @failure_count-@maximum : 0
           end
         end
 
@@ -286,7 +287,7 @@ module Resque
           old = @locked
 
           unless @locked
-            total_count = @cleaner.failure.count
+            total_count = @failure_count
             if total_count>@maximum
               @start_index = total_count-@maximum
               @jobs = all( @start_index, @maximum)
