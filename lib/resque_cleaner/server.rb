@@ -117,15 +117,13 @@ module ResqueCleaner
           @stats = { :klass => {}, :exception => {} }
           @total = Hash.new(0)
           @jobs.each do |job|
-            payload = job["payload"] || {}
-            klass = payload["class"] || 'UNKNOWN'
             exception = job["exception"] || 'UNKNOWN'
             failed_at = Time.parse job["failed_at"]
-            @stats[:klass][klass] ||= Hash.new(0)
+            @stats[:klass][job.klass_name] ||= Hash.new(0)
             @stats[:exception][exception] ||= Hash.new(0)
 
             [
-              @stats[:klass][klass],
+              @stats[:klass][job.klass_name],
               @stats[:exception][exception],
               @total
             ].each do |stat|
@@ -152,9 +150,7 @@ module ResqueCleaner
 
           @paginate = Paginate.new(@failed, @list_url, params[:p].to_i)
 
-          @klasses = cleaner.stats_by_class.keys
-          @exceptions = cleaner.stats_by_exception.keys
-          @count = cleaner.select(&block).size
+          @count = @failed.count
 
           erb File.read(ResqueCleaner::Server.erb_path('cleaner_list.erb'))
         end
@@ -230,14 +226,7 @@ module ResqueCleaner
         f: @from,
         t: @to,
         regex: @regex
-      }
-      
-      if URI.respond_to?(:encode)
-        # ruby < 3.0
-        params = params.map {|key,value| "#{key}=#{URI.encode(value.to_s)}"}.join("&")
-      else
-        params = params.map {|key,value| "#{key}=#{URI.encode_www_form_component(value.to_s)}"}.join("&")
-      end
+      }.map {|key,value| "#{key}=#{CGI.escape(value.to_s)}"}.join("&")
 
       @list_url = "cleaner_list?#{params}"
       @dump_url = "cleaner_dump?#{params}"
@@ -264,3 +253,4 @@ end
 Resque::Server.class_eval do
   include ResqueCleaner::Server
 end
+
