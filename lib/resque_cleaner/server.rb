@@ -150,9 +150,7 @@ module ResqueCleaner
 
           @paginate = Paginate.new(@failed, @list_url, params[:p].to_i)
 
-          @klasses = cleaner.stats_by_class.keys
-          @exceptions = cleaner.stats_by_exception.keys
-          @count = cleaner.select(&block).size
+          @count = @failed.count
 
           erb File.read(ResqueCleaner::Server.erb_path('cleaner_list.erb'))
         end

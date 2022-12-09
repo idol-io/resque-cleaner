@@ -84,8 +84,7 @@ module Resque
 
       # Returns every jobs for which block evaluates to true.
       def select(&block)
-        jobs = @limiter.jobs
-        block_given? ? @limiter.jobs.select(&block) : jobs
+        block_given? ? @limiter.jobs.select(&block) : @limiter.jobs
       end
       alias :failure_jobs :select
 

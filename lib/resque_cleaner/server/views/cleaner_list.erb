@@ -6,29 +6,6 @@
     <h1>Failed Jobs</h1>
   </div>
 
-  <div class="clearfix">
-    <div class="control_panel sub_header">
-      <form method="get">
-        <span class="class_filter">
-          Class: <%= class_filter("filter_class","c",@klasses,@klass)%>
-        </span>
-        <span class="exception_filter">
-          Exception: <%= exception_filter("filter_class","ex",@exceptions,@exception)%>
-        </span>
-        <span class="time_filter">
-          From: <%= time_filter("filter_from","f",@from)%>
-        </span>
-        <span class="time_filter">
-          To: <%= time_filter("filter_to","t",@to)%>
-        </span>
-        <span class="regex_filter">
-          Regex: <%= text_filter("filter_regex", "regex", Rack::Utils.escape_html(@regex))%>
-        </span>
-        <input type="submit" value="Filter" />
-      </form>
-    </div>
-  </div>
-
   <% if @count > 0 %>
     <div class="clearfix">
       <div class="control_panel sub_header">
@@ -37,7 +14,6 @@
           <input type="hidden" name="f" value="<%=@from%>" />
           <input type="hidden" name="t" value="<%=@to%>" />
           <input type="hidden" name="p" value="<%=@paginate.page%>" />
-          <input type="hidden" name="ex" value="<%=@exception%>" />
           <input type="hidden" name="regex" value="<%=Rack::Utils.escape_html(@regex)%>" />
           <select id="form_action" name="action">
             <option id="default_option" value="" selected="selected">-- Select Action --</option>
