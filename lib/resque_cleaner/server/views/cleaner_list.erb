@@ -3,7 +3,7 @@
 <!-- Many code was copied from failed.erb of the original resque -->
 <div class="cleaner">
   <div class="title clearfix">
-    <h1>Failed Jobs - <%= @klass %></h1>
+    <h1>Failed Jobs - <%= @exception.present? ? @exception : @klass %></h1>
   </div>
 
   <% if @count > 0 %>
@@ -14,6 +14,7 @@
           <input type="hidden" name="f" value="<%=@from%>" />
           <input type="hidden" name="t" value="<%=@to%>" />
           <input type="hidden" name="p" value="<%=@paginate.page%>" />
+          <input type="hidden" name="ex" value="<%=@exception%>" />
           <input type="hidden" name="regex" value="<%=Rack::Utils.escape_html(@regex)%>" />
           <select id="form_action" name="action">
             <option id="default_option" value="" selected="selected">-- Select Action --</option>
