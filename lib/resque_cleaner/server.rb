@@ -121,7 +121,6 @@ module ResqueCleaner
             exception = job["exception"] || 'UNKNOWN'
             failed_at = Time.parse job["failed_at"]
             klass[job.klass_name] ||= Hash.new(0)
-            klass[job.klass_name][:queue] ||= job['queue']
             exceptions[exception] ||= Hash.new(0)
 
             [
@@ -130,6 +129,7 @@ module ResqueCleaner
               @total
             ].each do |stat|
               stat[:total] += 1
+              stat[:queue] = job['queue']
               stat[:h1] += 1 if failed_at >= hours_ago(1)
               stat[:d1] += 1 if failed_at >= hours_ago(24)
               stat[:d7] += 1 if failed_at >= hours_ago(24*7)
@@ -137,8 +137,8 @@ module ResqueCleaner
           end
 
           @stats = {
-            klass: klass.sort_by { |_, count| count[:total] },
-            exception: exceptions.sort_by { |_, count| count[:total] }
+            klass: klass.sort_by { |_, count| -count[:total] },
+            exception: exceptions.sort_by { |_, -count| count[:total] }
           }
 
           erb File.read(ResqueCleaner::Server.erb_path('cleaner.erb'))

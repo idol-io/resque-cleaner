@@ -18,16 +18,22 @@
       <td class="number">
         <% if details[:h1] > 0 %>
           <a href="cleaner_list?<%=filter%>&f=1"><%= details[:h1] %></a>
+        <% else %>
+          -
         <% end %>
       </td>
       <td class="number">
         <% if details[:d1] > 0 %>
           <a href="cleaner_list?<%=filter%>&f=24"><%= details[:d1] %></a>
+        <% else %>
+          -
         <% end %>
       </td>
       <td class="number">
         <% if details[:d7] > 0 %>
           <a href="cleaner_list?<%=filter%>&f=168"><%= details[:d7] %></a>
+        <% else %>
+          -
         <% end %>
       </td>
     </tr>
