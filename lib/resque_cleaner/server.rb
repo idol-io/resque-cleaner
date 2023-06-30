@@ -122,7 +122,7 @@ module ResqueCleaner
             failed_at = Time.parse job["failed_at"]
             klass[job.klass_name] ||= Hash.new(0)
             klass[job.klass_name][:queue] ||= job['queue']
-            exception[exception] ||= Hash.new(0)
+            exceptions[exception] ||= Hash.new(0)
 
             [
               klass[job.klass_name],
