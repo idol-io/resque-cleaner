@@ -138,7 +138,7 @@ module ResqueCleaner
 
           @stats = {
             klass: klass.sort_by { |_, count| -count[:total] },
-            exception: exceptions.sort_by { |_, -count| count[:total] }
+            exception: exceptions.sort_by { |_, count| -count[:total] }
           }
 
           erb File.read(ResqueCleaner::Server.erb_path('cleaner.erb'))
