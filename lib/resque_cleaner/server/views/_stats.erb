@@ -1,44 +1,55 @@
 <table class="class_list">
   <tr>
     <th><%= type.gsub('klass','class').capitalize %></th>
-    <th>Failed</th>
+    <% if type.to_sym == :klass %>
+      <th>Queue</th>
+    <% end %>
     <th>In last 1 hour</th>
-    <th>In last 3 hours</th>
     <th>In last 24 hours</th>
-    <th>In last 3 days</th>
     <th>In last 7 days</th>
+    <th>Total</th>
   </tr>
-  <% @stats[type.to_sym].each do |field,count| %>
+  <% @stats[type.to_sym].each do |field, details| %>
     <tr>
       <% filter = "#{q}=#{CGI.escape(field)}" %>
       <td><%= field %></td>
+      <% if type.to_sym == :klass %>
+        <td><%= details[:queue] %></td>
+      <% end %>
       <td class="number">
-        <a href="cleaner_list?<%=filter%>"><%= count[:total] %></a>
+        <% if details[:h1] > 0 %>
+          <a href="cleaner_list?<%=filter%>&f=1"><%= details[:h1] %></a>
+        <% else %>
+          -
+        <% end %>
       </td>
       <td class="number">
-        <a href="cleaner_list?<%=filter%>&f=1"><%= count[:h1] %></a>
+        <% if details[:d1] > 0 %>
+          <a href="cleaner_list?<%=filter%>&f=24"><%= details[:d1] %></a>
+        <% else %>
+          -
+        <% end %>
       </td>
       <td class="number">
-        <a href="cleaner_list?<%=filter%>&f=3"><%= count[:h3] %></a>
+        <% if details[:d7] > 0 %>
+          <a href="cleaner_list?<%=filter%>&f=168"><%= details[:d7] %></a>
+        <% else %>
+          -
+        <% end %>
       </td>
       <td class="number">
-        <a href="cleaner_list?<%=filter%>&f=24"><%= count[:d1] %></a>
-      </td>
-      <td class="number">
-        <a href="cleaner_list?<%=filter%>&f=72"><%= count[:d3] %></a>
-      </td>
-      <td class="number">
-        <a href="cleaner_list?<%=filter%>&f=168"><%= count[:d7] %></a>
+        <a href="cleaner_list?<%=filter%>"><%= details[:total] %></a>
       </td>
     </tr>
   <% end %>
   <tr class="total">
     <td>Total</td>
+    <% if type.to_sym == :klass %>
+      <td class="number">-</td>
+    <% end %>
     <td class="number"><a href="cleaner_list"><%= @total[:total] %></a></td>
     <td class="number"><a href="cleaner_list?f=1"><%= @total[:h1] %></a></td>
-    <td class="number"><a href="cleaner_list?f=3"><%= @total[:h3] %></a></td>
     <td class="number"><a href="cleaner_list?f=24"><%= @total[:d1] %></a></td>
-    <td class="number"><a href="cleaner_list?f=72"><%= @total[:d3] %></a></td>
     <td class="number"><a href="cleaner_list?f=168"><%= @total[:d7] %></a></td>
   </tr>
 </table>

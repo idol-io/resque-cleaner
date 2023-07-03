@@ -114,27 +114,32 @@ module ResqueCleaner
           load_cleaner_filter
 
           @jobs = cleaner.select
-          @stats = { :klass => {}, :exception => {} }
+          klass = {}
+          exceptions = {}
           @total = Hash.new(0)
           @jobs.each do |job|
             exception = job["exception"] || 'UNKNOWN'
             failed_at = Time.parse job["failed_at"]
-            @stats[:klass][job.klass_name] ||= Hash.new(0)
-            @stats[:exception][exception] ||= Hash.new(0)
+            klass[job.klass_name] ||= Hash.new(0)
+            exceptions[exception] ||= Hash.new(0)
 
             [
-              @stats[:klass][job.klass_name],
-              @stats[:exception][exception],
+              klass[job.klass_name],
+              exceptions[exception],
               @total
             ].each do |stat|
               stat[:total] += 1
+              stat[:queue] = job['queue']
               stat[:h1] += 1 if failed_at >= hours_ago(1)
-              stat[:h3] += 1 if failed_at >= hours_ago(3)
               stat[:d1] += 1 if failed_at >= hours_ago(24)
-              stat[:d3] += 1 if failed_at >= hours_ago(24*3)
               stat[:d7] += 1 if failed_at >= hours_ago(24*7)
             end
           end
+
+          @stats = {
+            klass: klass.sort_by { |_, count| -count[:total] },
+            exception: exceptions.sort_by { |_, count| -count[:total] }
+          }
 
           erb File.read(ResqueCleaner::Server.erb_path('cleaner.erb'))
         end
